@@ -1,0 +1,77 @@
+// Prisma schema for Exenzia Finance Bot
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PersonType {
+  FISICA
+  JURIDICA
+}
+
+enum SaleStatus {
+  EM_ANDAMENTO
+  APROVADO
+  FATURADO
+  CANCELADO
+}
+
+enum InstallmentStatus {
+  OPEN
+  OVERDUE
+  PAID
+}
+
+model Token {
+  id           String   @id @default(uuid())
+  accessToken  String
+  refreshToken String
+  scope        String
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+}
+
+model Customer {
+  id         String     @id
+  legacyId   String?    @unique
+  name       String
+  document   String?
+  personType PersonType
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  sales      Sale[]
+}
+
+model Sale {
+  id           String                @id
+  legacyId     String?
+  number       String
+  status       SaleStatus
+  totalValue   Decimal               @db.Decimal(18, 2)
+  customerId   String
+  customer     Customer              @relation(fields: [customerId], references: [id])
+  saleDate     DateTime
+  updatedAt    DateTime
+  createdAt    DateTime              @default(now())
+  installments PaymentInstallment[]
+}
+
+model PaymentInstallment {
+  id        String            @id @default(uuid())
+  saleId    String
+  sale      Sale              @relation(fields: [saleId], references: [id])
+  dueDate   DateTime
+  amount    Decimal           @db.Decimal(18, 2)
+  status    InstallmentStatus
+  createdAt DateTime          @default(now())
+}
+
+model PollState {
+  id           Int      @id
+  lastPolledAt DateTime
+}
