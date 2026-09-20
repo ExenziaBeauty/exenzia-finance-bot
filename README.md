@@ -44,7 +44,14 @@ npm run seed
 3. **Clientes**: sincroniza id, id_legado, nome, documento, tipo_pessoa.
 4. **Vendas**: consome `/v1/venda/busca` filtrando por `data_alteracao_de`/`ate`, grava status e financeiro.
 5. **Financeiro**: parcelas mapeadas em `PaymentInstallment` com identificação de vencidas/abertas.
-6. **Mensageria**: `MessageService` possui stubs `sendSaleCreated`, `sendSaleInvoiced`, `sendPaymentReminder` para futura integração com WhatsApp/API externa.
+6. **Mensageria**: `MessageService` possui stubs `sendSaleCreated`, `sendSaleInvoiced`, `sendPaymentReminder`, `sendProspectingApproach` para futura integração com WhatsApp/API externa.
+
+## Agente de Prospecção
+Módulo dedicado (`ProspectingModule`/`ProspectingService`) especializado em identificar oportunidades comerciais a partir dos dados já sincronizados do Conta Azul:
+1. **Reativação**: clientes cuja última venda é mais antiga que `PROSPECTING_INACTIVITY_DAYS` (padrão 60 dias), priorizados pelo valor histórico total de compras.
+2. **Novos leads**: clientes cadastrados que ainda não possuem nenhuma venda registrada.
+3. Executa semanalmente (`@Cron('0 8 * * 1')`, toda segunda-feira às 8h), monta uma lista priorizada limitada a `PROSPECTING_BATCH_SIZE` clientes (padrão 20) e dispara `MessageService.sendProspectingApproach` com uma abordagem sugerida para cada um.
+4. `ProspectingService.identifyProspects()` pode ser reutilizado por outros módulos/consumidores (ex.: um endpoint futuro) para obter a lista de candidatos sem depender do cron.
 
 ## Observabilidade
 - Logs claros com `Logger` do NestJS.

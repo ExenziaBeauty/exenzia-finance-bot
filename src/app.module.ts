@@ -5,6 +5,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { ContaAzulModule } from './modules/conta-azul/conta-azul.module';
 import { PollingModule } from './modules/polling/polling.module';
 import { MessagingModule } from './modules/messaging/messaging.module';
+import { ProspectingModule } from './modules/prospecting/prospecting.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MessagingModule } from './modules/messaging/messaging.module';
     MessagingModule,
     ContaAzulModule,
     PollingModule,
+    ProspectingModule,
   ],
 })
 export class AppModule {}

@@ -15,4 +15,8 @@ export class MessageService {
   async sendPaymentReminder(installmentId: string): Promise<void> {
     this.logger.log(`Stub sendPaymentReminder for installment ${installmentId}`);
   }
+
+  async sendProspectingApproach(customerId: string, message: string): Promise<void> {
+    this.logger.log(`Stub sendProspectingApproach for customer ${customerId}: ${message}`);
+  }
 }
